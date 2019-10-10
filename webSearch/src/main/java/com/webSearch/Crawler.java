@@ -13,7 +13,7 @@ public class Crawler extends WebCrawler {
     @Override
     public boolean shouldVisit(Page referringPage, WebURL url) {
         String href = url.getURL().toLowerCase();
-        //here need to give all the websites (tut.by for now)
+        //here need to check sites for correctness (if we need to check them or not)
         return !FILTERS.matcher(href).matches()
                 && href.startsWith("https://www.tut.by");
     }
