@@ -9,13 +9,17 @@ import java.util.regex.Pattern;
 
 public class Crawler extends WebCrawler {
     private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg|png|mp3|mp4|zip|gz))$");
+    private final static Pattern TUTMATCHER = Pattern.compile("^https?:\\/{2}.*\\.?tut\\.by.*$");
 
     @Override
     public boolean shouldVisit(Page referringPage, WebURL url) {
         String href = url.getURL().toLowerCase();
+        //System.out.println(href);
         //here need to check sites for correctness (if we need to check them or not)
         return !FILTERS.matcher(href).matches()
-                && href.startsWith("https://www.tut.by");
+                && TUTMATCHER.matcher(href).matches()
+                && !href.contains("/poll/")
+                && !href.contains("css");
     }
 
     @Override

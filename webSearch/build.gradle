@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'IotkoKharavetsEYAZ'
@@ -11,7 +12,11 @@ repositories {
     mavenCentral()
 }
 
+application {
+    mainClassName = 'com.webSearch.Main'
+}
+
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile group: 'edu.uci.ics', name: 'crawler4j', version: '4.4.0'
+    compile group: 'edu.uci.ics', name: 'crawler4j', version: '4.2'
 }

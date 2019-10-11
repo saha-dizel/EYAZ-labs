@@ -13,7 +13,7 @@ public class Main {
         CrawlConfig config = new CrawlConfig();
         config.setCrawlStorageFolder(crawlStorageFolder);
         config.setPolitenessDelay(200);
-        config.setMaxDepthOfCrawling(3);
+        config.setMaxDepthOfCrawling(2);
         config.setMaxPagesToFetch(500);
         config.setIncludeBinaryContentInCrawling(false);
         config.setResumableCrawling(false);
