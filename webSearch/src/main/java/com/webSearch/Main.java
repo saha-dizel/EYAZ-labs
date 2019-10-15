@@ -1,11 +1,14 @@
 package com.webSearch;
 
+import com.webSearch.Crawler.Crawler;
+import com.webSearch.View.View;
 import edu.uci.ics.crawler4j.crawler.*;
 import edu.uci.ics.crawler4j.fetcher.*;
 import edu.uci.ics.crawler4j.robotstxt.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
+        View view = new View();
         //TODO: choose folder to save temp files
         String crawlStorageFolder = "/data/crawl/root";
         int numberOfCrawlers = 10;

@@ -1,4 +1,4 @@
-package com.webSearch;
+package com.webSearch.Crawler;
 
 import edu.uci.ics.crawler4j.crawler.*;
 import edu.uci.ics.crawler4j.parser.*;
