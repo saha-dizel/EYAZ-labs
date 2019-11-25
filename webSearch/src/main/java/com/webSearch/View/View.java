@@ -2,7 +2,15 @@ package com.webSearch.View;
 
 import com.webSearch.Crawler.Crawler;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,11 +50,35 @@ public class View {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         button.addActionListener(e -> {
-            String query = textField.getText();
-            System.out.println(query);
-            //TODO process the query and then use it to start the engine
-            Thread crawlerInitThread = new Thread(() -> controller.start(factory, numberOfCrawlers));
-            crawlerInitThread.start();
+            try {
+                String query = textField.getText();
+                System.out.println(query);
+                //TODO process the query and then use it to start the engine
+                Thread crawlerInitThread = new Thread(() -> controller.start(factory, numberOfCrawlers));
+                crawlerInitThread.start();
+                crawlerInitThread.join(0);
+
+                System.out.println("Join ended");
+
+                SearchRequest searchRequest = new SearchRequest("page");
+                QueryBuilder matchQueryBuilder = QueryBuilders.queryStringQuery(textField.getText());
+                SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+                sourceBuilder.query(matchQueryBuilder);
+                searchRequest.source(sourceBuilder);
+
+                SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+                SearchHits hits = searchResponse.getHits();
+                for (SearchHit hit : hits) {
+                    System.out.println(hit.getIndex());
+                    System.out.println(hit.getScore());
+                    String url = (String) hit.getSourceAsMap().get("URL");
+                    System.out.println(url);
+                }
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
         });
 
         frame.pack();

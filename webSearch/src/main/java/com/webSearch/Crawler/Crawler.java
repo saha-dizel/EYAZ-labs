@@ -69,7 +69,6 @@ public class Crawler extends WebCrawler {
                 request.id(numOfDocs.toString());
                 request.source(jsonMap, XContentType.JSON);
 
-
                 IndexResponse indexResponse = client.index(request, RequestOptions.DEFAULT);
             }
         }
