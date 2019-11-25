@@ -2,6 +2,7 @@ package com.webSearch.View;
 
 import com.webSearch.Crawler.Crawler;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
+import org.elasticsearch.client.RestHighLevelClient;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,10 +15,14 @@ public class View {
     private JButton button;
     private JTextField textField;
     private JLabel label;
+    private RestHighLevelClient client;
 
     public View(CrawlController controller,
                 CrawlController.WebCrawlerFactory<Crawler> factory,
-                int numberOfCrawlers) {
+                int numberOfCrawlers,
+                RestHighLevelClient client) {
+        this.client = client;
+
         frame = new JFrame();
         panel = new JPanel();
 
