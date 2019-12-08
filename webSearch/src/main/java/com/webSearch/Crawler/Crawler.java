@@ -7,24 +7,18 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.AnalyzeRequest;
-import org.elasticsearch.client.indices.AnalyzeResponse;
-import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.common.xcontent.XContentType;
 
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 public class Crawler extends WebCrawler {
     private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg|png|mp3|mp4|zip|gz))$");
-    private final static Pattern TUTMATCHER = Pattern.compile("^https?:/{2}.*\\.?tut\\.by.*$");
+    private final static Pattern TUTMATCHER = Pattern.compile("^https?:/{2}news\\.tut\\.by/.*$");
 
     private RestHighLevelClient client;
     private final AtomicInteger numOfDocs;
@@ -53,17 +47,11 @@ public class Crawler extends WebCrawler {
 
             if (page.getParseData() instanceof HtmlParseData) {
                 HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
-                String text = htmlParseData.getText();
-                String html = htmlParseData.getHtml();
-                Set<WebURL> links = htmlParseData.getOutgoingUrls();
-
-                System.out.println("Text length: " + text.length());
-                System.out.println("Html length: " + html.length());
-                System.out.println("Number of outgoing links: " + links.size());
+                String all = htmlParseData.toString();
 
                 Map<String, Object> jsonMap = new HashMap<>();
                 jsonMap.put("URL", url.toString());
-                jsonMap.put("content", text);
+                jsonMap.put("content", all);
 
                 IndexRequest request = new IndexRequest("page");
                 request.id(numOfDocs.toString());

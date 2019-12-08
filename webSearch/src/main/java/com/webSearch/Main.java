@@ -39,7 +39,7 @@ public class Main {
         AtomicInteger numOfDocs = new AtomicInteger(0);
 
         //TODO: add seeds to start from
-        controller.addSeed("https://www.tut.by/");
+        controller.addSeed("https://news.tut.by/");
 
         RestHighLevelClient client = new RestHighLevelClient(RestClient.builder(
                 new HttpHost("localhost", 9200, "http")

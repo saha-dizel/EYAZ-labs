@@ -6,16 +6,19 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.LinkedList;
+import java.util.Map;
 
 public class View {
     private JFrame frame;
@@ -24,6 +27,9 @@ public class View {
     private JTextField textField;
     private JLabel label;
     private RestHighLevelClient client;
+    private JFrame results;
+    private JTable table;
+    private JScrollPane scrollPane;
 
     public View(CrawlController controller,
                 CrawlController.WebCrawlerFactory<Crawler> factory,
@@ -63,18 +69,40 @@ public class View {
                 SearchRequest searchRequest = new SearchRequest("page");
                 QueryBuilder matchQueryBuilder = QueryBuilders.queryStringQuery(textField.getText());
                 SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+                HighlightBuilder highlight = new HighlightBuilder();
+                HighlightBuilder.Field highlightField = new HighlightBuilder.Field("content");
+                highlight.field(highlightField);
+                sourceBuilder.highlighter(highlight);
                 sourceBuilder.query(matchQueryBuilder);
                 searchRequest.source(sourceBuilder);
 
                 SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
+                results = new JFrame("Results");
+                String[] columnNames = {"URL", "Highlight", "Score"};
+                LinkedList<Object[]> data = new LinkedList<>();
+
                 SearchHits hits = searchResponse.getHits();
                 for (SearchHit hit : hits) {
-                    System.out.println(hit.getIndex());
-                    System.out.println(hit.getScore());
                     String url = (String) hit.getSourceAsMap().get("URL");
-                    System.out.println(url);
+
+                    //highlight get
+                    Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+                    HighlightField highlightMatch = highlightFields.get("content");
+                    Text[] fragments = highlightMatch.fragments();
+                    String fragmentString = fragments[fragments.length - 1].string();
+
+                    data.add(new Object[]{url, fragmentString, hit.getScore()});
                 }
+
+                scrollPane = new JScrollPane();
+                table = new JTable(data.toArray(new Object[data.size()][3]), columnNames);
+                scrollPane = new JScrollPane(table);
+                table.setFillsViewportHeight(true);
+
+                results.add(scrollPane);
+                results.pack();
+                results.setVisible(true);
             }
             catch (Exception ex) {
                 ex.printStackTrace();
